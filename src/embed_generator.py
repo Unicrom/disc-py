@@ -2,6 +2,23 @@ import discord
 
 
 class Embed:
+    # TODO add method to set Embed image
+    # TODO add method to set Embed Provider
+    # TODO add rgb and hsl support to set_color method
+    # TODO add add_local_file' method to generate local file paths '
+    # TODO add method to set Embed thumbnail
+    # TODO add method to set Embed timestamp
+    # TODO add method to set Embed url
+    # TODO add method to set Embed video
+    # TODO add method to set Author Icon
+    # TODO add method to set Footer Icon
+    # TODO add method to create field from JSON
+    # TODO add method to create JSON from field
+    # TODO add method to generate Embed object from JSON
+    # TODO add method to generate JSON from Embed object
+    # TODO add method to create discord File object from local files
+    # TODO add method to generate discord Embed object 
+
     def __init__(self, name: str, template: bool = False) -> None:
         """
         #### Creates an empty Embed object
