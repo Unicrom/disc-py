@@ -19,14 +19,11 @@ class Embed:
     # TODO add method to create discord File object from local files
     # TODO add method to generate discord Embed object 
 
-    def __init__(self, name: str, template: bool = False) -> None:
+    def __init__(self, template: bool = False) -> None:
         """
         #### Creates an empty Embed object
-        **name:** title of Discord Embed\n
         **template:** whether attributes should have placeholder values"""
-        self.set_name(name)
         self.reset_type()
-
         if template: self.apply_template()
 
     def clear_content(self, clear_name: bool = True) -> None:
