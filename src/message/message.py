@@ -2,7 +2,6 @@ from src.embed_generator.embed import Embed
 
 
 class Message:
-    # TODO support for adding embeds from JSON
     # TODO add file support
     # TODO add sticker support
     # TODO add delete_after support
@@ -49,7 +48,8 @@ class Message:
         **index:** *optional* index of where the embed is added (default -1 = end)\n
         **is_JSON:** *optional* whether embed is JSON code"""
         if is_JSON:
-            pass
+            embed_object = Embed()
+            embed_object.from_JSON(embed)
         else:
             embed_object = embed
 
