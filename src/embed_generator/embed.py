@@ -6,8 +6,6 @@ from src.embed_generator.embed_file import EmbedFile
 
 
 class Embed:
-    # TODO add rgb and hsl support to set_color method
-    # TODO implement timestamp methods
     # TODO add method to generate discord Embed object
 
     def __init__(self, template: bool = False) -> None:
@@ -95,13 +93,11 @@ class Embed:
         self.author_icon_url = None
 
     # Color Methods
-    def set_color(self, value: str, format: str = "hex") -> None:
+    def set_color(self, value: str) -> None:
         """
         Sets the color of the Embed\n
-        **value:** color code\n
-        **format:** *optional* format of color code\n
-        *possible values:* `default` \'hex\'"""
-        match format:
+        **value:** color code\n"""
+        match "hex": # Future plans to support different color formats
             case "hex":
                 self.set_hex_color(value)
             case _:
