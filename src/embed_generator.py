@@ -11,7 +11,7 @@ class Embed:
     # TODO add method to set Embed url
     # TODO add method to set Embed video
 
-    # TODO add method to set Footer Icon
+
 
     # TODO add method to generate Embed object from JSON
     # TODO add method to generate JSON from Embed object
@@ -25,41 +25,6 @@ class Embed:
         self.reset_type()
         if template:
             self.apply_template()
-
-    def clear_content(self, clear_name: bool = True) -> None:
-        """
-        #### Clears the values of the embed
-        **clear_name:** whether the name is cleared"""
-        if clear_name:
-            self.clear_name()  # Clear Title
-
-        self.clear_author()
-        self.reset_color()
-        self.clear_desc()
-        self.clear_fields()
-        self.clear_footer()
-        self.clear_img()
-        self.clear_provider()
-        self.clear_thumbnail()
-        self.clear_timestamp()
-        self.reset_type()
-        self.clear_url()
-        self.clear_video()
-
-        self.clear_files()
-
-    def apply_template(self) -> None:
-        """
-        #### Filles the Embed with placeholder values
-        **WARNING** *completely clears embed attributes*"""
-        self.clear_content(True)  # Clears Embed Content
-
-        self.set_name("Embed Title")
-        self.set_author("User123")
-        self.set_color("ff0000")
-        self.set_desc("Description of Embed")
-        self.set_footer("Footer of Embed")
-        self.reset_type()
 
     # Set Fields
     def set_name(self, name: str) -> None:
@@ -200,6 +165,28 @@ class Embed:
             return new_file.get_attachment_url()
 
     # Clear Fields
+    def clear_content(self, clear_name: bool = True) -> None:
+        """
+        #### Clears the values of the embed
+        **clear_name:** whether the name is cleared"""
+        if clear_name:
+            self.clear_name()  # Clear Title
+
+        self.clear_author()
+        self.reset_color()
+        self.clear_desc()
+        self.clear_fields()
+        self.clear_footer()
+        self.clear_img()
+        self.clear_provider()
+        self.clear_thumbnail()
+        self.clear_timestamp()
+        self.reset_type()
+        self.clear_url()
+        self.clear_video()
+
+        self.clear_files()
+
     def clear_name(self) -> None:
         """
         #### Clears the title of the Embed"""
@@ -309,6 +296,20 @@ class Embed:
         for file in self.files:
             if file.get_attachment_url() == file_path:
                 self.files.remove(file)
+
+    # Misc Functions
+    def apply_template(self) -> None:
+        """
+        #### Filles the Embed with placeholder values
+        **WARNING** *completely clears embed attributes*"""
+        self.clear_content(True)  # Clears Embed Content
+
+        self.set_name("Embed Title")
+        self.set_author("User123")
+        self.set_color("ff0000")
+        self.set_desc("Description of Embed")
+        self.set_footer("Footer of Embed")
+        self.reset_type()
 
     # Create Discord Objects
     def create_embed_object(self):
