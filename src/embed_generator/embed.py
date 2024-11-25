@@ -97,7 +97,7 @@ class Embed:
         """
         Sets the color of the Embed\n
         **value:** color code\n"""
-        match "hex": # Future plans to support different color formats
+        match "hex":  # Future plans to support different color formats
             case "hex":
                 self.set_hex_color(value)
             case _:
@@ -303,10 +303,10 @@ class Embed:
         self.url = None
 
     # Timestamp Methods
-    def set_timestamp(self, datetime: datetime.datetime)-> None:
-        '''
+    def set_timestamp(self, datetime: datetime.datetime) -> None:
+        """
         Sets the timestamp for the embed to an aware datetime\n
-        **datetime:** the datetime.datetime object timestamp is being set to'''
+        **datetime:** the datetime.datetime object timestamp is being set to"""
         self.timestamp = datetime
 
     def clear_timestamp(self) -> None:
@@ -385,26 +385,55 @@ class Embed:
             embed_JSON["author"]["url"],
             embed_JSON["author"]["icon"],
         )
-        self.set_color(embed_JSON['color'])
-        self.set_desc(embed_JSON['desc'])
-        self.set_image(embed_JSON['image'])
-        self.set_thumbnail(embed_JSON['thumbnail'])
-        self.set_name(embed_JSON['name'])
-        self.set_type(embed_JSON['type'])
-        self.set_url(embed_JSON['url'])
-        self.set_timestamp(embed_JSON['timestamp'])
+        self.set_color(embed_JSON["color"])
+        self.set_desc(embed_JSON["desc"])
+        self.set_image(embed_JSON["image"])
+        self.set_thumbnail(embed_JSON["thumbnail"])
+        self.set_name(embed_JSON["name"])
+        self.set_type(embed_JSON["type"])
+        self.set_url(embed_JSON["url"])
+        self.set_timestamp(embed_JSON["timestamp"])
 
         self.clear_fields()
         self.clear_files()
-        for field_JSON in embed_JSON['fields']:
+        for field_JSON in embed_JSON["fields"]:
             self.field_from_JSON(field_JSON)
-        for file_JSON in embed_JSON['files']:
-            self.add_local_file(file_JSON['path'], return_new_path=False)
-
+        for file_JSON in embed_JSON["files"]:
+            self.add_local_file(file_JSON["path"], return_new_path=False)
 
     # Embed Generation Methods
-    def create_embed_object(self):
-        discord_embed = discord.Embed()
+    def create_embed_object(self) -> None:
+        '''
+        Creates an discord.Embed object and sets the different properties'''
+        discord_embed = discord.Embed(
+            color=self.color,
+            title=self.name,
+            type=self.type,
+            url=self.url,
+            description=self.desc,
+            timestamp=self.timestamp,
+        )
 
-    def generate(self) -> discord.Embed:
-        discord_embed = discord.Embed()
+        for field in self.fields:
+            discord_embed.add_field(field.label, field.content, field.inline)
+        discord_embed.set_author(self.author, url=self.author_url, icon_url=self.author_icon_url)
+        discord_embed.set_footer(text=self.footer_content, icon_url=self.footer_icon_url)
+        discord_embed.set_image(self.image_url)
+        discord_embed.set_thumbnail(self.thumbnail_url)
+
+        self.discord_embed = discord_embed
+    
+    def create_file_objects(self) -> None:
+        '''
+        Creates a list of discord.File objects'''
+        self.discord_files = [
+            file.generate_discord_object for file in self.files
+        ]
+
+    def generate(self) -> list:
+        '''
+        Returns a list in the format of [discord.Embed, [...discord.File]]'''
+        self.create_embed_object()
+        self.create_file_objects()
+
+        return [self.discord_embed, self.discord_files]
