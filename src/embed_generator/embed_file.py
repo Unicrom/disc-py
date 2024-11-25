@@ -1,5 +1,6 @@
 import discord
 
+
 class EmbedFile:
     def __init__(self, path: str) -> None:
         """
@@ -38,3 +39,11 @@ class EmbedFile:
         Creates a discord.File object"""
         file = discord.File(self.path, self.file_name)
         return file
+
+    def to_JSON(self) -> dict:
+        """
+        Returns JSON code of the this object"""
+        file_JSON = {
+            "path" : self.path,
+            "file" : self.file_name,
+        }

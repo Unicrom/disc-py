@@ -2,11 +2,10 @@ import discord
 from src.embed_generator.embed_field import EmbedField
 from src.embed_generator.embed_file import EmbedFile
 
+
 class Embed:
     # TODO add rgb and hsl support to set_color method
     # TODO implement timestamp methods
-    # TODO add method to generate Embed object from JSON
-    # TODO add method to generate JSON from Embed object
     # TODO add method to generate discord Embed object
 
     def __init__(self, template: bool = False) -> None:
@@ -23,12 +22,12 @@ class Embed:
         Sets the Title of the Embed\n
         **name:** title of Embed"""
         self.name = name
-    
+
     def clear_name(self) -> None:
         """
         Clears the title of the Embed"""
         self.name = None
-    
+
     # Author Methods
     def set_author(
         self,
@@ -92,7 +91,7 @@ class Embed:
         if "attachment://" in self.author_icon_url:
             self.delete_file(self.author_icon_url)
         self.author_icon_url = None
-    
+
     # Color Methods
     def set_color(self, value: str, format: str = "hex") -> None:
         """
@@ -116,7 +115,7 @@ class Embed:
         """
         Sets the color to black"""
         self.color = self.set_color("000000")
-    
+
     # Description Methods
     def set_desc(self, value: str, raise_error: bool = True) -> None:
         """
@@ -224,7 +223,7 @@ class Embed:
         Sets the type of the Embed\n
         **type:** type being set to"""
         self.type = type
-    
+
     def reset_type(self) -> None:
         """
         Sets the type of the Embed to Rich"""
@@ -266,7 +265,7 @@ class Embed:
         else:
             local_image_url = self.add_local_file(url)
             self.image_url = local_image_url
-    
+
     def clear_image(self) -> None:
         """
         Clears the Image of the Embed"""
@@ -275,7 +274,7 @@ class Embed:
         self.image_url = None
 
     # Thumbnail Method
-    def set_thumbnail(self, url:str, local: bool = False) -> None:
+    def set_thumbnail(self, url: str, local: bool = False) -> None:
         """
         Sets the thumbnail for the embed content\n
         **url:** URL of the thumbnail\n
@@ -294,29 +293,29 @@ class Embed:
         self.thumbnail_url = None
 
     # URL Methods
-    def set_url(self, url:str) -> None:
-        '''
+    def set_url(self, url: str) -> None:
+        """
         Sets the url of the embed\n
-        **url:** url of embed'''
+        **url:** url of embed"""
         self.url = url
-        
+
     def clear_url(self) -> None:
         """
         Clears the url of the Embed"""
         self.url = None
-    
+
     # Timestamp Methods
     def clear_timestamp(self) -> None:
         """
         Clears the timestamp of the Embed"""
         self.timestamp = None
-    
+
     # Provider Methods
     def clear_provider(self) -> None:
         """
         Clears the Provider of the Embed"""
         self.provider = None
-    
+
     # Video Methods
     def clear_video(self) -> None:
         """
@@ -358,6 +357,62 @@ class Embed:
         self.set_desc("Description of Embed")
         self.set_footer("Footer of Embed")
         self.reset_type()
+
+    # JSON Methods
+    def to_JSON(self) -> dict:
+        """
+        Generates a JSON code with embed attributes"""
+        fields_JSON = [field.to_JSON() for field in self.fields]
+        files_JSON = [file.to_JSON() for file in self.files]
+
+        embed_JSON = {
+            "author": {
+                "name": self.author,
+                "url": self.author_url,
+                "icon": self.author_icon_url,
+            },
+            "color": self.color,
+            "desc": self.desc,
+            "fields": fields_JSON,
+            "footer": {"content": self.footer_content, "icon": self.footer_icon_url},
+            "image": self.image_url,
+            "provider": None,  # Provider not supported
+            "thumbnail": self.thumbnail_url,
+            "timestamp": None,  # Timestamp not support
+            "name": self.name,
+            "type": self.type,
+            "url": self.url,
+            "files": files_JSON,
+        }
+
+        return embed_JSON
+
+    def from_JSON(self, embed_JSON: dict) -> None:
+        """
+        Sets the embeds properties based on JSON code\n
+        **embed_JSON:** JSON for the embed"""
+        self.set_author(
+            embed_JSON["author"]["name"],
+            embed_JSON["author"]["url"],
+            embed_JSON["author"]["icon"],
+        )
+        self.set_color(embed_JSON['color'])
+        self.set_desc(embed_JSON['desc'])
+        self.set_image(embed_JSON['image'])
+        self.set_thumbnail(embed_JSON['thumbnail'])
+        self.set_name(embed_JSON['name'])
+        self.set_type(embed_JSON['type'])
+        self.set_url(embed_JSON['url'])
+
+        self.clear_fields()
+        self.clear_files()
+        for field_JSON in embed_JSON['fields']:
+            self.field_from_JSON(field_JSON)
+        for file_JSON in embed_JSON['files']:
+            self.add_local_file(file_JSON['path'], return_new_path=False)
+
+        self.clear_provider() # Provider not supported
+        self.clear_timestamp() # Timestamp not supported
 
     # Embed Generation Methods
     def create_embed_object(self):
