@@ -310,12 +310,6 @@ class Embed:
         Clears the timestamp of the Embed"""
         self.timestamp = None
 
-    # Provider Methods
-    def clear_provider(self) -> None:
-        """
-        Clears the Provider of the Embed"""
-        self.provider = None
-
     # Video Methods
     def clear_video(self) -> None:
         """
@@ -336,7 +330,6 @@ class Embed:
         self.clear_fields()
         self.clear_footer()
         self.clear_image()
-        self.clear_provider()
         self.clear_thumbnail()
         self.clear_timestamp()
         self.reset_type()
@@ -376,7 +369,6 @@ class Embed:
             "fields": fields_JSON,
             "footer": {"content": self.footer_content, "icon": self.footer_icon_url},
             "image": self.image_url,
-            "provider": None,  # Provider not supported
             "thumbnail": self.thumbnail_url,
             "timestamp": None,  # Timestamp not support
             "name": self.name,
@@ -411,7 +403,6 @@ class Embed:
         for file_JSON in embed_JSON['files']:
             self.add_local_file(file_JSON['path'], return_new_path=False)
 
-        self.clear_provider() # Provider not supported
         self.clear_timestamp() # Timestamp not supported
 
     # Embed Generation Methods
