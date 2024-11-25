@@ -1,4 +1,6 @@
 import discord
+import datetime
+
 from src.embed_generator.embed_field import EmbedField
 from src.embed_generator.embed_file import EmbedFile
 
@@ -305,16 +307,16 @@ class Embed:
         self.url = None
 
     # Timestamp Methods
+    def set_timestamp(self, datetime: datetime.datetime)-> None:
+        '''
+        Sets the timestamp for the embed to an aware datetime\n
+        **datetime:** the datetime.datetime object timestamp is being set to'''
+        self.timestamp = datetime
+
     def clear_timestamp(self) -> None:
         """
         Clears the timestamp of the Embed"""
         self.timestamp = None
-
-    # Video Methods
-    def clear_video(self) -> None:
-        """
-        Clears the video of the Embed"""
-        self.video = None
 
     # Misc Methods
     def clear_content(self, clear_name: bool = True) -> None:
@@ -334,7 +336,6 @@ class Embed:
         self.clear_timestamp()
         self.reset_type()
         self.clear_url()
-        self.clear_video()
 
         self.clear_files()
 
@@ -370,7 +371,7 @@ class Embed:
             "footer": {"content": self.footer_content, "icon": self.footer_icon_url},
             "image": self.image_url,
             "thumbnail": self.thumbnail_url,
-            "timestamp": None,  # Timestamp not support
+            "timestamp": self.timestamp,
             "name": self.name,
             "type": self.type,
             "url": self.url,
@@ -395,6 +396,7 @@ class Embed:
         self.set_name(embed_JSON['name'])
         self.set_type(embed_JSON['type'])
         self.set_url(embed_JSON['url'])
+        self.set_timestamp(embed_JSON['timestamp'])
 
         self.clear_fields()
         self.clear_files()
@@ -403,7 +405,6 @@ class Embed:
         for file_JSON in embed_JSON['files']:
             self.add_local_file(file_JSON['path'], return_new_path=False)
 
-        self.clear_timestamp() # Timestamp not supported
 
     # Embed Generation Methods
     def create_embed_object(self):
