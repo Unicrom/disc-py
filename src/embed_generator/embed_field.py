@@ -1,7 +1,7 @@
 class EmbedField:
     def __init__(self, label: str, content: str, inline: bool = True) -> None:
         """
-        #### Creates an EmbedField Object
+        Creates an EmbedField Object\n
         **label:** name of field\n
         **content:** content of field\n
         **inline:** *optional* whether the field is displayed as inline"""
@@ -11,7 +11,7 @@ class EmbedField:
 
     def set_label(self, label: str, raise_error: bool = True) -> None:
         """
-        #### Sets the name of the field
+        Sets the name of the field\n
         **label:** what the name of the field is set to *256 char max*\n
         **raise_error:** *optional* whether an Error is raised if label exceeds 256 char
         """
@@ -21,7 +21,7 @@ class EmbedField:
 
     def set_content(self, content: str, raise_error: bool = True) -> None:
         """
-        #### Sets the value of the field
+        Sets the value of the field\n
         **content:** what the value of the field is set to *1024 char max*\n
         **raise_error:** *optional* whether an Error is raised if content exceeds 1024 char
         """
@@ -31,17 +31,17 @@ class EmbedField:
 
     def set_inline(self) -> None:
         """
-        #### Sets the Field to be displayed as inline"""
+        Sets the Field to be displayed as inline"""
         self.inline = True
 
     def set_block(self) -> None:
         """
-        #### Sets the Field to be displayed as block"""
+        Sets the Field to be displayed as block"""
         self.inline = False
 
     def to_JSON(self) -> dict:
         """
-        #### Returns the three attributes of the Field objet in JSON format"""
+        Returns the three attributes of the Field objet in JSON format"""
         info_JSON = {
             "label": self.label,
             "content": self.content,
