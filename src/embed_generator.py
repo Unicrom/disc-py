@@ -131,7 +131,7 @@ class Embed:
         #### Sets the description of the Embed
         **value:** description of embed *4096 char max*"""
         if 4096 < len(value) and raise_error:
-            raise Exception("Description of Field exceeds 4096 char limit")
+            raise Exception("Description of Embed exceeds 4096 char limit")
         self.desc = value
 
     def create_field(
@@ -144,7 +144,7 @@ class Embed:
         **index:** index of field
         > *default* -1 adds the field to the back\n
         **inline** *optional* whether the the field is displayed as inline"""
-        new_field = Field(label, content, inline)
+        new_field = EmbedField(label, content, inline)
         if index == -1:
             self.fields.append(new_field)
         else:
@@ -281,10 +281,10 @@ class Embed:
         discord_embed = discord.Embed()
 
 
-class Field:
+class EmbedField:
     def __init__(self, label: str, content: str, inline: bool = True) -> None:
         """
-        #### Creates an embed Field Object
+        #### Creates an EmbedField Object
         **label:** name of field\n
         **content:** content of field\n
         **inline:** *optional* whether the field is displayed as inline"""
