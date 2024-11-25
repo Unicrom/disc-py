@@ -2,17 +2,8 @@ import discord
 
 
 class Embed:
-    # TODO add method to set Embed image
-    # TODO add method to set Embed Provider
     # TODO add rgb and hsl support to set_color method
-
-    # TODO add method to set Embed thumbnail
-    # TODO add method to set Embed timestamp
-    # TODO add method to set Embed url
-    # TODO add method to set Embed video
-
-
-
+    # TODO implement timestamp methods
     # TODO add method to generate Embed object from JSON
     # TODO add method to generate JSON from Embed object
 
@@ -45,8 +36,7 @@ class Embed:
         **author:** name of author *Max of 256 char*\n
         **url:** *optional* url for the author\n
         **icon_url:** *optional* URL of the author icon *Only Supports HTTP(s)*\n
-        ##### Set icon to a local file:
-        > use **add_local_img** method with **target=\'author\'** *requires img path*"""
+        **local_icon_url** *optional* whether icon_url is a local path"""
         self.author = author
         self.author_url = url
 
@@ -122,19 +112,20 @@ class Embed:
         **index:** *optional* index of the Field *default -1 = add to end of fields*"""
         self.create_field(JSON["label"], JSON["content"], index, JSON["inline"])
 
-    def set_footer(self, content: str, icon_url: bool = None, local_icon_url:bool=False) -> None:
+    def set_footer(
+        self, content: str, icon_url: bool = None, local_icon_url: bool = False
+    ) -> None:
         """
         #### Sets the Footer of the Embed
         **content:** text of the footer *Max of 0248 char*\n
         **icon_url:** *optional* URL of the footer icon *Only Supports HTTP(s)*\n
-        ##### Set icon to a local file:
-        > use **add_local_img** method with **target=\'footer\'** *requires img path*"""
+        **local_icon_url** *optional* whether icon_url is a local path"""
         self.footer_content = content
         if icon_url:
             self.set_footer_icon(icon_url, local_icon_url)
-        else: 
+        else:
             self.footer_icon_url = None
-    
+
     def set_footer_icon(self, url: str, local: bool = False) -> None:
         """
         #### Sets the icon for the footer
@@ -164,6 +155,34 @@ class Embed:
         if return_new_path:
             return new_file.get_attachment_url()
 
+    def set_image(self, url: str, local: bool = False) -> None:
+        """
+        #### Sets the image for the embed content
+        **url:** URL of the img\n
+        **local:** *optional* whether the URl is a local path"""
+        if not local:
+            self.image_url = url
+        else:
+            local_image_url = self.add_local_file(url)
+            self.image_url = local_image_url
+
+    def set_thumbnail(self, url:str, local: bool = False) -> None:
+        """
+        #### Sets the thumbnail for the embed content
+        **url:** URL of the thumbnail\n
+        **local:** *optional* whether the URl is a local path"""
+        if not local:
+            self.thumbnail_url = url
+        else:
+            local_thumbnail_url = self.add_local_file(url)
+            self.thumbnail_url = local_thumbnail_url
+
+    def set_url(self, url:str) -> None:
+        '''
+        #### Sets the url of the embed
+        **url:** url of embed'''
+        self.url = url
+
     # Clear Fields
     def clear_content(self, clear_name: bool = True) -> None:
         """
@@ -177,7 +196,7 @@ class Embed:
         self.clear_desc()
         self.clear_fields()
         self.clear_footer()
-        self.clear_img()
+        self.clear_image()
         self.clear_provider()
         self.clear_thumbnail()
         self.clear_timestamp()
@@ -231,12 +250,25 @@ class Embed:
         #### Clears the Fields of the Embed"""
         self.fields = []
 
+    def delete_field(self, field_label: str, delete_all: bool = True) -> None:
+        """
+        #### Deletes a fields under a specified label
+        **field_label:** label of field being deleted\n
+        **delete_all:** *optional* whether all fields of said label are deleted"""
+        for field in self.fields:
+            if not field.label == field_label:
+                continue
+
+            self.fields.remove(field)
+            if not delete_all:
+                return
+
     def clear_footer(self) -> None:
         """
         #### Clears the Footer of the Embed"""
         self.clear_footer_content()
         self.clear_footer_icon()
-    
+
     def clear_footer_content(self) -> None:
         """
         #### Clears the content of the Footer"""
@@ -249,10 +281,12 @@ class Embed:
             self.delete_file(self.footer_icon_url)
         self.footer_icon_url = None
 
-    def clear_img(self) -> None:
+    def clear_image(self) -> None:
         """
         #### Clears the Image of the Embed"""
-        self.img = None
+        if "attachment://" in self.image_url:
+            self.delete_file(self.image_url)
+        self.image_url = None
 
     def clear_provider(self) -> None:
         """
@@ -262,23 +296,25 @@ class Embed:
     def clear_thumbnail(self) -> None:
         """
         #### Clears the thumbnail of the Embed"""
-        self.thumbnail = None
+        if "attachment://" in self.thumbnail_url:
+            self.delete_file(self.thumbnail_url)
+        self.thumbnail_url = None
 
     def clear_timestamp(self) -> None:
         """
         #### Clears the timestamp of the Embed"""
         self.timestamp = None
-
+    
     def reset_type(self) -> None:
         """
         #### Sets the type of the Embed to Rich"""
         self.set_type("Rich")
-
+    
     def clear_url(self) -> None:
         """
         #### Clears the url of the Embed"""
         self.url = None
-
+    
     def clear_video(self) -> None:
         """
         #### Clears the video of the Embed"""
