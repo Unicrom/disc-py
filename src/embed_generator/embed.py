@@ -1,5 +1,6 @@
 import discord
-
+from src.embed_generator.embed_field import EmbedField
+from src.embed_generator.embed_file import EmbedFile
 
 class Embed:
     # TODO add rgb and hsl support to set_color method
@@ -67,7 +68,8 @@ class Embed:
 
         local_path = self.add_local_file(url, return_new_path=True)
         self.author_icon_url = local_path
-        def clear_author(self) -> None:
+
+    def clear_author(self) -> None:
         """
         #### Clears the author of the Embed"""
         self.clear_author_name()
@@ -363,95 +365,3 @@ class Embed:
 
     def generate(self) -> discord.Embed:
         discord_embed = discord.Embed()
-
-
-class EmbedField:
-    def __init__(self, label: str, content: str, inline: bool = True) -> None:
-        """
-        #### Creates an EmbedField Object
-        **label:** name of field\n
-        **content:** content of field\n
-        **inline:** *optional* whether the field is displayed as inline"""
-        self.label = self.set_label(label)
-        self.content = self.set_content(content)
-        self.inline = inline
-
-    def set_label(self, label: str, raise_error: bool = True) -> None:
-        """
-        #### Sets the name of the field
-        **label:** what the name of the field is set to *256 char max*\n
-        **raise_error:** *optional* whether an Error is raised if label exceeds 256 char
-        """
-        if 256 < len(label) and raise_error:
-            raise Exception("Label of Field exceeds 256 char limit")
-        self.label = label
-
-    def set_content(self, content: str, raise_error: bool = True) -> None:
-        """
-        #### Sets the value of the field
-        **content:** what the value of the field is set to *1024 char max*\n
-        **raise_error:** *optional* whether an Error is raised if content exceeds 1024 char
-        """
-        if 1024 < len(content) and raise_error:
-            raise Exception("content of Field exceeds 1024 char limit")
-        self.content = content
-
-    def set_inline(self) -> None:
-        """
-        #### Sets the Field to be displayed as inline"""
-        self.inline = True
-
-    def set_block(self) -> None:
-        """
-        #### Sets the Field to be displayed as block"""
-        self.inline = False
-
-    def to_JSON(self) -> dict:
-        """
-        #### Returns the three attributes of the Field objet in JSON format"""
-        info_JSON = {
-            "label": self.label,
-            "content": self.content,
-            "inline": self.inline,
-        }
-        return info_JSON
-
-
-class EmbedFile:
-    def __init__(self, path: str) -> None:
-        """
-        #### Creates a special file object easily accessed by Embeds object
-        **path:** path to file *must contain file name*"""
-        self.change_file_path(path)
-
-    def get_file_name(self) -> None:
-        """
-        #### Extracts file name from the path"""
-        path = self.path
-        if "/" in path:  # Path uses / as a separator
-            separated_path = path.split("/")
-            self.file_name = separated_path[-1]
-        elif "\\" in path:  # Path uses \ as a separator
-            separated_path = path.split("/")
-            self.file_name = separated_path[-1]
-        else:  # If the path is also the file name
-            self.file_name = path
-
-    def get_attachment_url(self) -> str:
-        """
-        #### Returns a str to be used in specifying the use of a local image"""
-        attachment_path = "attachment://" + self.file_name
-        return attachment_path
-
-    def change_file_path(self, path: str) -> None:
-        """
-        #### Changes the path of the file
-        **path:** new file path"""
-        self.path = path
-        self.get_file_name()
-
-    def generate_discord_object(self) -> discord.File:
-        """
-        #### Creates a discord.File object"""
-        file = discord.File(self.path, self.file_name)
-        return file
