@@ -5,26 +5,26 @@ class Embed:
     # TODO add method to set Embed image
     # TODO add method to set Embed Provider
     # TODO add rgb and hsl support to set_color method
-    # TODO add add_local_file' method to generate local file paths '
+
     # TODO add method to set Embed thumbnail
     # TODO add method to set Embed timestamp
     # TODO add method to set Embed url
     # TODO add method to set Embed video
-    # TODO add method to set Author Icon
+
     # TODO add method to set Footer Icon
-    # TODO add method to create field from JSON
-    # TODO add method to create JSON from field
+
     # TODO add method to generate Embed object from JSON
     # TODO add method to generate JSON from Embed object
-    # TODO add method to create discord File object from local files
-    # TODO add method to generate discord Embed object 
+
+    # TODO add method to generate discord Embed object
 
     def __init__(self, template: bool = False) -> None:
         """
         #### Creates an empty Embed object
         **template:** whether attributes should have placeholder values"""
         self.reset_type()
-        if template: self.apply_template()
+        if template:
+            self.apply_template()
 
     def clear_content(self, clear_name: bool = True) -> None:
         """
@@ -46,6 +46,8 @@ class Embed:
         self.clear_url()
         self.clear_video()
 
+        self.clear_files()
+
     def apply_template(self) -> None:
         """
         #### Filles the Embed with placeholder values
@@ -66,7 +68,13 @@ class Embed:
         **name:** title of Embed"""
         self.name = name
 
-    def set_author(self, author: str, url: str = None, icon_url: str = None) -> None:
+    def set_author(
+        self,
+        author: str,
+        url: str = None,
+        icon_url: str = None,
+        local_icon_url: bool = False,
+    ) -> None:
         """
         #### Sets the Author of the Embed
         **author:** name of author *Max of 256 char*\n
@@ -76,7 +84,29 @@ class Embed:
         > use **add_local_img** method with **target=\'author\'** *requires img path*"""
         self.author = author
         self.author_url = url
-        self.author_icon_url = icon_url
+
+        if icon_url:
+            self.set_author_icon(icon_url, local_icon_url)
+        else:
+            self.author_icon_url = None
+
+    def set_author_url(self, url: str) -> None:
+        """
+        #### Sets the URL of the author
+        **url:** URL of author"""
+        self.author_url = url
+
+    def set_author_icon(self, url: str, local: bool = False) -> None:
+        """
+        #### Sets the icon for the author
+        **url:** the URL for the img\n
+        **local:** *optional* whether the URL is a local file path"""
+        if not local:
+            self.author_url = url
+            return
+
+        local_path = self.add_local_file(url, return_new_path=True)
+        self.author_icon_url = local_path
 
     def set_color(self, value: str, format: str = "hex") -> None:
         """
@@ -120,6 +150,13 @@ class Embed:
         else:
             self.fields.insert(index, new_field)
 
+    def field_from_JSON(self, JSON: dict, index: int = -1) -> None:
+        """
+        #### Creates a field based on a JSON file
+        **JSON:** the JSON code being used in generation\n
+        **index:** *optional* index of the Field *default -1 = add to end of fields*"""
+        self.create_field(JSON["label"], JSON["content"], index, JSON["inline"])
+
     def set_footer(self, content: str, icon_url: bool = None) -> None:
         """
         #### Sets the Footer of the Embed
@@ -136,6 +173,17 @@ class Embed:
         **type:** type being set to"""
         self.type = type
 
+    def add_local_file(self, file_path: str, return_new_path: bool = True):
+        """
+        #### Adds a local file that can be used for media assets within the embed
+        **file_path:** path to the file\n
+        **return_new_path:** whether the new \'attachment://\' should be returned"""
+        new_file = EmbedFile(file_path)
+        self.files.append(new_file)
+
+        if return_new_path:
+            return new_file.get_attachment_url()
+
     # Clear Fields
     def clear_name(self) -> None:
         """
@@ -147,6 +195,13 @@ class Embed:
         #### Clears the author of the Embed"""
         self.author = None
         self.author_url = None
+        self.clear_author_icon()
+
+    def clear_author_icon(self) -> None:
+        """
+        #### Deletes the Author icon"""
+        if "attachment://" in self.author_icon_url:
+            self.delete_file(self.author_icon_url)
         self.author_icon_url = None
 
     def reset_color(self) -> None:
@@ -205,6 +260,19 @@ class Embed:
         #### Clears the video of the Embed"""
         self.video = None
 
+    def clear_files(self) -> None:
+        """
+        #### Clears the content of files"""
+        self.files = []
+
+    def delete_file(self, file_path: str) -> None:
+        """
+        #### Removes a file based on a target file_path
+        **file_path:** the \'attachment//:\' path of the file being removed"""
+        for file in self.files:
+            if file.get_attachment_url() == file_path:
+                self.files.remove(file)
+
     # Create Discord Objects
     def create_embed_object(self):
         discord_embed = discord.Embed()
@@ -253,3 +321,53 @@ class Field:
         """
         #### Sets the Field to be displayed as block"""
         self.inline = False
+
+    def to_JSON(self) -> dict:
+        """
+        #### Returns the three attributes of the Field objet in JSON format"""
+        info_JSON = {
+            "label": self.label,
+            "content": self.content,
+            "inline": self.inline,
+        }
+        return info_JSON
+
+
+class EmbedFile:
+    def __init__(self, path: str) -> None:
+        """
+        #### Creates a special file object easily accessed by Embeds object
+        **path:** path to file *must contain file name*"""
+        self.change_file_path(path)
+
+    def get_file_name(self) -> None:
+        """
+        #### Extracts file name from the path"""
+        path = self.path
+        if "/" in path:  # Path uses / as a separator
+            separated_path = path.split("/")
+            self.file_name = separated_path[-1]
+        elif "\\" in path:  # Path uses \ as a separator
+            separated_path = path.split("/")
+            self.file_name = separated_path[-1]
+        else:  # If the path is also the file name
+            self.file_name = path
+
+    def get_attachment_url(self) -> str:
+        """
+        #### Returns a str to be used in specifying the use of a local image"""
+        attachment_path = "attachment://" + self.file_name
+        return attachment_path
+
+    def change_file_path(self, path: str) -> None:
+        """
+        #### Changes the path of the file
+        **path:** new file path"""
+        self.path = path
+        self.get_file_name()
+
+    def generate_discord_object(self) -> discord.File:
+        """
+        #### Creates a discord.File object"""
+        file = discord.File(self.path, self.file_name)
+        return file
