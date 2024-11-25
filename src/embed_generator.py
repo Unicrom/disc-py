@@ -102,7 +102,7 @@ class Embed:
         **url:** the URL for the img\n
         **local:** *optional* whether the URL is a local file path"""
         if not local:
-            self.author_url = url
+            self.author_icon_url = url
             return
 
         local_path = self.add_local_file(url, return_new_path=True)
@@ -157,7 +157,7 @@ class Embed:
         **index:** *optional* index of the Field *default -1 = add to end of fields*"""
         self.create_field(JSON["label"], JSON["content"], index, JSON["inline"])
 
-    def set_footer(self, content: str, icon_url: bool = None) -> None:
+    def set_footer(self, content: str, icon_url: bool = None, local_icon_url:bool=False) -> None:
         """
         #### Sets the Footer of the Embed
         **content:** text of the footer *Max of 0248 char*\n
@@ -165,7 +165,22 @@ class Embed:
         ##### Set icon to a local file:
         > use **add_local_img** method with **target=\'footer\'** *requires img path*"""
         self.footer_content = content
-        self.footer_icon_url = icon_url
+        if icon_url:
+            self.set_footer_icon(icon_url, local_icon_url)
+        else: 
+            self.footer_icon_url = None
+    
+    def set_footer_icon(self, url: str, local: bool = False) -> None:
+        """
+        #### Sets the icon for the footer
+        **url:** the URL for the img\n
+        **local:** *optional* whether the URL is a local file path"""
+        if not local:
+            self.footer_icon_url = url
+            return
+
+        local_path = self.add_local_file(url, return_new_path=True)
+        self.footer_icon_url = local_path
 
     def set_type(self, type: str) -> None:
         """
@@ -193,9 +208,19 @@ class Embed:
     def clear_author(self) -> None:
         """
         #### Clears the author of the Embed"""
-        self.author = None
-        self.author_url = None
+        self.clear_author_name()
+        self.clear_author_url()
         self.clear_author_icon()
+
+    def clear_author_name(self) -> None:
+        """
+        #### Deletes the name of the Embed"""
+        self.author = None
+
+    def clear_author_url(self) -> None:
+        """
+        #### Deletes the Author URL"""
+        self.author_url = None
 
     def clear_author_icon(self) -> None:
         """
@@ -222,7 +247,19 @@ class Embed:
     def clear_footer(self) -> None:
         """
         #### Clears the Footer of the Embed"""
+        self.clear_footer_content()
+        self.clear_footer_icon()
+    
+    def clear_footer_content(self) -> None:
+        """
+        #### Clears the content of the Footer"""
         self.footer_content = None
+
+    def clear_footer_icon(self) -> None:
+        """
+        #### Deletes the Footer icon"""
+        if "attachment://" in self.footer_icon_url:
+            self.delete_file(self.footer_icon_url)
         self.footer_icon_url = None
 
     def clear_img(self) -> None:
